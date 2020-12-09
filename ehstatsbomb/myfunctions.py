@@ -6,6 +6,7 @@ from pandas.io.json import json_normalize
 @staticmethod
 def _test_print():
     print('Test Successful')
+    print('Code running well')
 
 @staticmethod
 def _open_json_file(file_path):
