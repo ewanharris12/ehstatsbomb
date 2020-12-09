@@ -3,6 +3,9 @@ import pandas as pd
 import json
 from pandas.io.json import json_normalize
 
+@staticmethod
+def _test_print():
+    print('Test Successful')
 
 @staticmethod
 def _open_json_file(file_path):
