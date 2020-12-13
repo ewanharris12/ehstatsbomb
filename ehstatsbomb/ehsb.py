@@ -14,10 +14,8 @@ class MyClass:
         """
         Open a json file as a Pandas dataframe when given a path e.g. python_prjects/data/7298.json
         """
-        filepath = os.listdir(file_path)
-        
-        assert filepath.endswith('.json') == False, "File is not json"
-        data_file = open(filepath, encoding='utf-8')
+        assert file_path.endswith('.json') == False, "File is not json"
+        data_file = open(file_path, encoding='utf-8')
         data = json.load(data_file)
         df = json_normalize(data, sep = "_")
 
