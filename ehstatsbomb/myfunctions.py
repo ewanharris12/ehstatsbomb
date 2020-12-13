@@ -61,6 +61,15 @@ def get_all_match_info(self, matches_path, folders=None):
 
     return match_info
 
+@staticmethod
+def get_team_match_ids(self, match_info_df=match_info, team_name=None):
+    """
+    Return match ids which include the team you have specified
+    """
+    assert team_name != None, "team_name not specified"
+
+    match_info_df
+
 
 
 
