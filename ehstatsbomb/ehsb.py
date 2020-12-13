@@ -54,7 +54,7 @@ class MyClass:
             folders = os.listdir(matches_path)
 
         for folder in folders:
-                folder_path = matches_path + folder + '/'
+                folder_path = matches_path + '/' + folder + '/'
                 folder_df = self._extract_all_json_files(folder_path)
                 print(f'Folder {folder} extracted')
 
