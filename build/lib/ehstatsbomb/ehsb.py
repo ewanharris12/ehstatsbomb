@@ -5,7 +5,7 @@ from pandas.io.json import json_normalize
 
 class MyClass:
     def __init__(self):
-        self._match_info_df = None
+        self._match_info_df = pd.DataFrame()
         self._root_path = None
 
     @staticmethod
