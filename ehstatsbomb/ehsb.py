@@ -33,7 +33,7 @@ class MyClass:
         export_df = pd.DataFrame()
 
         self._root_path = folder_path.replace('matches/','')
-        
+
         for filename in os.listdir(folder_path):
             if filename.endswith('.json'):
                 file_path = folder_path + filename
@@ -95,8 +95,8 @@ class MyClass:
         hfilter = 'home_team_' + category
         afilter = 'away_team_' + category
 
-        _df = [(self._match_info_df[self._match_info_df[hfilter] == identifier) | (self._match_info_df[self._match_info_df[afilter] == identifier)]
-
+        _df = self._match_info_df[(self._match_info_df[hfilter]==identifier) | (self._match_info_df[afilter]==identifier)]
+        
         ids = _df['match_id'].unique().tolist()
 
         assert len(ids)>0, "No matches found"
