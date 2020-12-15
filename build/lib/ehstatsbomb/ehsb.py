@@ -49,7 +49,7 @@ class MyClass:
         Pass list of folders which contain match data (optional - otherwise will scan all folders)
         """
         if matches_path[-1] != '/':
-            matches_path+'/'
+            matches_path = matches_path+'/'
             print('Path corrected, / added')
 
         match_info = pd.DataFrame()
@@ -107,7 +107,40 @@ class MyClass:
 
         return ids
 
+    def get_specific_match(self, match_id, path=None):
+        """
+        Specify a match_id and a dataframe of all the event data from that match is returned
+        """
 
+        if path == None:
+            path = self._root_path + 'events/'
+
+        if path[-1] != '/':
+            path = path+'/'
+
+        full_path = f'path{match_id}.json'
+
+        assert os.path.exists(full_path), "File does not exist"
+
+        df = self._open_json_file(full_path)
+
+        return df
+
+    def get_team_event_data(self, identifier, category):
+        """
+        Return event data from all matches involving your chosen team
+        """
+        assert category in ['name','id']
+        assert identifier != None, "Team identifier not specified"
+
+        matches = self.get_team_match_ids(identifier,category)
+        events = pd.DataFrame()
+
+        for id in matches:
+            _df = self.get_specific_match(id)
+            events = pd.concat([events,_df], sort=False)
+
+        return events
 
 
 

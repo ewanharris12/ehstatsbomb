@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: ehstatsbomb
-Version: 0.1.4
+Version: 0.1.5
 Summary: My first attempt at building a Python library. Extracts, parses and performs functions on statsbomb event data.
 Home-page: UNKNOWN
 Author: Ewan Harris
