@@ -94,7 +94,7 @@ class MyClass:
         """
         assert category in ['name','id']
         assert identifier != None, "Team identifier not specified"
-        assert self._match_info_df != None, "Match info dataframe not found, please run get_all_match_info"
+        assert self._match_info_df, "Match info dataframe not found, please run get_all_match_info"
 
         hfilter = 'home_team_' + category
         afilter = 'away_team_' + category
