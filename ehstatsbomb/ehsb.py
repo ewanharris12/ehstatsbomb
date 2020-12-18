@@ -32,8 +32,6 @@ class MyClass:
         assert folder_path[-1] == '/', "Path must finish with /"
         export_df = pd.DataFrame()
 
-        self._root_path = folder_path.replace('matches/','')
-
         for filename in os.listdir(folder_path):
             if filename.endswith('.json'):
                 file_path = folder_path + filename
@@ -54,11 +52,13 @@ class MyClass:
 
         match_info = pd.DataFrame()
 
+        self._root_path = matches_path.replace('matches/','')
+
         if not folders:
             folders = os.listdir(matches_path)
 
         for folder in folders:
-                folder_path = matches_path + '/' + folder + '/'
+                folder_path = matches_path + folder + '/'
                 folder_df = self._extract_all_json_files(folder_path)
                 print(f'Folder {folder} extracted')
 
@@ -118,9 +118,9 @@ class MyClass:
         if path[-1] != '/':
             path = path+'/'
 
-        full_path = f'path{match_id}.json'
+        full_path = f'{path}{match_id}.json'
 
-        assert os.path.exists(full_path), "File does not exist"
+        assert os.path.exists(full_path), f"File does not exist at this path: {full_path}"
 
         df = self._open_json_file(full_path)
 
