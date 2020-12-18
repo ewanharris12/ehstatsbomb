@@ -113,6 +113,7 @@ class MyClass:
         """
 
         if path == None:
+            assert self._root_path != None, "path must be specified"
             path = self._root_path + 'events/'
 
         if path[-1] != '/':
