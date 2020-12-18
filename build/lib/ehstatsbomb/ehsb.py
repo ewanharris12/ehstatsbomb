@@ -155,22 +155,22 @@ class MyClass:
 
         df = self.get_specific_match(match_id)
 
-        df = df[pd.isnull(df['tactics_lineup']) == False]
+        df = df[df['type_name'] == 'Starting XI']
 
         home_xi = df.iloc[0]['tactics_lineup']
-        away_xi = df.iloc[0]['tactics_lineup']
+        away_xi = df.iloc[1]['tactics_lineup']
 
         ht, at = {},{}
 
         for item,dic,team in zip([home_xi, away_xi],[ht,at],['home','away']):
             for i in item:
-                id = i['player']['id']
+                id = i['player']['id']b
                 dic[id] = {}
                 dic[id]['team'] = team
                 dic[id]['name'] = i['player']['name']
                 dic[id]['number'] = i['jersey_number']
 
-        full = ht.update(at)
+        ht.update(at)
 
         if ha == 'Home':
             if form == 'dic':
@@ -186,9 +186,9 @@ class MyClass:
 
         else:
             if form == 'dic':
-                return full
+                return ht.update(at)
             else:
-                return pd.DataFrame(full).T
+                return pd.DataFrame(ht.update(at)).T
 
 
 
