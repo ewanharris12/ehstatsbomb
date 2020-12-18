@@ -142,6 +142,54 @@ class MyClass:
 
         return events
 
+    def get_starting_xis(self, match_id, ha=None, form='df'):
+        """
+        Get a dictionary or dataframe of starting xis from a particular match, this returns the Player Id, Name and Jersey Number
+        ha can be 'Home' or 'Away' if you only want one of the XIs
+        form can 'dic' or 'df' (Default) for Dictionary or DataFrame
+        """
+        assert ha in ['Home','Away',None], f"Invalid ha: {ha}"
+        assert format in ['df','dic'], f"Invalid format: {form}"
+
+        df = self.get_specific_match(match_id)
+
+        df = df[pd.isnull(df['tactics_lineup']) == False]
+
+        home_xi = df.iloc[0]['tactics_lineup']
+        away_xi = df.iloc[0]['tactics_lineup']
+
+        ht, at = {},{}
+
+        for item,dic,team in zip([home_xi, away_xi],[ht,at],['home','away']):
+            for i in item:
+                id = i['player']['id']
+                dic[id] = {}
+                dic[id]['team'] = team
+                dic[id]['name'] = i['player']['name']
+                dic[id]['number'] = i['jersey_number']
+
+        full = home_xi.update(away_xi)
+
+        if ha == 'Home':
+            if form == 'dic':
+                return ht
+            else:
+                return pd.DataFrame(ht).T
+
+        elif ha == 'Away':
+            if form == 'dic':
+                return at
+            else:
+                return pd.DataFrame(at).T
+
+        else:
+            if form == 'dic':
+                return full
+            else:
+                return pd.DataFrame(full).T
+
+
+
 
 
 
