@@ -169,8 +169,6 @@ class MyClass:
                 dic[id]['name'] = i['player']['name']
                 dic[id]['number'] = i['jersey_number']
 
-        ht.update(at)
-
         if ha == 'Home':
             if form == 'dic':
                 return ht
