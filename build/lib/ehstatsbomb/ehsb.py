@@ -182,10 +182,11 @@ class MyClass:
                 return pd.DataFrame(at).T
 
         else:
+            ht.update(at)
             if form == 'dic':
-                return ht.update(at)
+                return ht
             else:
-                return pd.DataFrame(ht.update(at)).T
+                return pd.DataFrame(ht).T
 
 
 
