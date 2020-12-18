@@ -130,7 +130,7 @@ class MyClass:
         """
         Return event data from all matches involving your chosen team
         """
-        assert category in ['name','id']
+        assert category in ['name','id'], f"Invalid category: {category}"
         assert identifier != None, "Team identifier not specified"
 
         matches = self.get_team_match_ids(identifier,category)
@@ -148,6 +148,7 @@ class MyClass:
         ha can be 'Home' or 'Away' if you only want one of the XIs
         form can 'dic' or 'df' (Default) for Dictionary or DataFrame
         """
+        print(form)
         assert ha in ['Home','Away',None], f"Invalid ha: {ha}"
         assert form in ['df','dic'], f"Invalid format: {form}"
 
