@@ -149,7 +149,6 @@ class MyClass:
         ha can be 'Home' or 'Away' if you only want one of the XIs
         form can 'dic' or 'df' (Default) for Dictionary or DataFrame
         """
-        print(form)
         assert ha in ['Home','Away',None], f"Invalid ha: {ha}"
         assert form in ['df','dic'], f"Invalid format: {form}"
 
@@ -164,7 +163,7 @@ class MyClass:
 
         for item,dic,team in zip([home_xi, away_xi],[ht,at],['home','away']):
             for i in item:
-                id = i['player']['id']b
+                id = i['player']['id']
                 dic[id] = {}
                 dic[id]['team'] = team
                 dic[id]['name'] = i['player']['name']
