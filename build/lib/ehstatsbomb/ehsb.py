@@ -113,6 +113,7 @@ class MyClass:
         """
 
         if path == None:
+            assert self._root_path != None, "path must be specified"
             path = self._root_path + 'events/'
 
         if path[-1] != '/':
@@ -130,7 +131,7 @@ class MyClass:
         """
         Return event data from all matches involving your chosen team
         """
-        assert category in ['name','id'], f"Invalid category: {category}"
+        assert category in ['name','id']
         assert identifier != None, "Team identifier not specified"
 
         matches = self.get_team_match_ids(identifier,category)
