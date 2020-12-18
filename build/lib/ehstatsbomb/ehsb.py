@@ -127,10 +127,14 @@ class MyClass:
 
         return df
 
-    def get_team_event_data(self, identifier, category):
+    def get_team_event_data(self, identifier, category, path):
         """
         Return event data from all matches involving your chosen team
         """
+        if path == None:
+            assert self._root_path != None, "path must be specified"
+            path = self._root_path + 'events/'
+
         assert category in ['name','id']
         assert identifier != None, "Team identifier not specified"
 
@@ -143,7 +147,7 @@ class MyClass:
 
         return events
 
-    def get_starting_xis(self, match_id, ha=None, form='df'):
+    def get_starting_xis(self, match_id, ha=None, form='df', path=None):
         """
         Get a dictionary or dataframe of starting xis from a particular match, this returns the Player Id, Name and Jersey Number
         ha can be 'Home' or 'Away' if you only want one of the XIs
@@ -151,6 +155,10 @@ class MyClass:
         """
         assert ha in ['Home','Away',None], f"Invalid ha: {ha}"
         assert form in ['df','dic'], f"Invalid format: {form}"
+
+        if path == None:
+            assert self._root_path != None, "path must be specified"
+            path = self._root_path + 'events/'
 
         df = self.get_specific_match(match_id)
 
@@ -168,6 +176,8 @@ class MyClass:
                 dic[id]['team'] = team
                 dic[id]['name'] = i['player']['name']
                 dic[id]['number'] = i['jersey_number']
+                dic[id]['position_id'] = i['position']['id']
+                dic[id]['position'] = i['position']['name']
 
         if ha == 'Home':
             if form == 'dic':
@@ -189,9 +199,28 @@ class MyClass:
                 return pd.DataFrame(ht).T
 
 
+    def get_avg_positions(self, match_id, path=None):
+        """
+        Get average positions of the Starting XIs from a particular game
+        """
+        if path == None:
+            assert self._root_path != None, "path must be specified"
+            path = self._root_path + 'events/'
 
+        xis = self.get_starting_xis(match_id)
+        events = self.get_specific_match(match_id)
 
+        players = xis.index.tolist()
 
+        df = events[['team_id','team_name','player_id','player_name','location']].dropna()
 
+        df['x'] = df['location'].apply(lambda x: x[0])
+        df['y'] = df['location'].apply(lambda x: x[1])
+
+        df = df[df['player_id'].isin(players)]
+
+        avg_pos = df.groupby(['team_id','team_name','player_id','player_name'], as_index=False).agg({'x':'mean','y':'mean'})
+
+        return avg_pos
 
 
