@@ -149,7 +149,7 @@ class MyClass:
         form can 'dic' or 'df' (Default) for Dictionary or DataFrame
         """
         assert ha in ['Home','Away',None], f"Invalid ha: {ha}"
-        assert format in ['df','dic'], f"Invalid format: {form}"
+        assert form in ['df','dic'], f"Invalid format: {form}"
 
         df = self.get_specific_match(match_id)
 
