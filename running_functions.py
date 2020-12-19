@@ -8,15 +8,17 @@ import pandas as pd
 from ehstatsbomb import ehsb
 sb = ehsb.MyClass()
 
-# # %%
-# mp = 'C:/Users/Ewan/OneDrive - Kubrick Group/Personal Development Projects/open-data-master/data/matches/'
-# mi = sb.get_all_match_info(matches_path=mp)
+# %%
+mp = 'C:/Users/Ewan/OneDrive - Kubrick Group/Personal Development Projects/open-data-master/data/matches/'
+mi = sb.get_all_match_info(matches_path=mp)
 
-# # %%
-# tmis = sb.get_team_match_ids('Chelsea FCW','name')
+# %%
+tmis = sb.get_team_match_ids('Chelsea FCW','name')
 
 # # %%
 spec_match = sb.get_specific_match('19748', path='C:/Users/Ewan/OneDrive - Kubrick Group/Personal Development Projects/open-data-master/data/events/')
 
 # %%
-plot_map = sb.
+#plot_map = sb.plot_avg_positions('19748')
+
+sb.plot_avg_positions(match_id='19748')

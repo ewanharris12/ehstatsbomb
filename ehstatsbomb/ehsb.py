@@ -292,6 +292,8 @@ class MyClass:
         Plot the average postitions of the Starting XIs on a football pitch
         ha can be 'Home', 'Away' or 'All'
         """
+        assert ha in ['Home','Away','All'], f"ha not recognised: {ha}"
+
         if path == None:
             assert self._root_path != None, "path must be specified"
             path = self._root_path + 'events/'
@@ -306,13 +308,13 @@ class MyClass:
         fig = self._plot_football_pitch(scale=scale)
 
         if ha == 'Home':
-            lists = zip([home],['home'],[0])
+            lists = zip([home],['home'],[0],['left'])
         elif ha == 'Away':
-            lists = zip([away],['away'],[0])
+            lists = zip([away],['away'],[0],['left'])
         else:
-            lists = zip([home,away],['home','away'],[0,130])
+            lists = zip([home,away],['home','away'],[0,130],['left','right'])
             away['x'] = 120 - away['x']
-            away['y'] = 80 - away['y']            
+            away['y'] = 80 - away['y']             
         
         for team,name,x,align in lists:
             plt.scatter(team['x'],team['y'], s=200*scale, marker='o', c=cdict[name])
