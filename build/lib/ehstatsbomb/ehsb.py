@@ -2,6 +2,8 @@ import os
 import pandas as pd
 import json
 from pandas.io.json import json_normalize
+import matplotlib.pyplot as plt
+from matplotlib.patches import Arc
 
 class MyClass:
     def __init__(self):
@@ -214,13 +216,106 @@ class MyClass:
 
         df = events[['team_id','team_name','player_id','player_name','location']].dropna()
 
+        df = df.merge(xis, how='inner', left_on='player_id', right_index=True)
+
         df['x'] = df['location'].apply(lambda x: x[0])
         df['y'] = df['location'].apply(lambda x: x[1])
 
         df = df[df['player_id'].isin(players)]
 
-        avg_pos = df.groupby(['team_id','team_name','player_id','player_name'], as_index=False).agg({'x':'mean','y':'mean'})
+        avg_pos = df.groupby(['team_id','team_name','player_id','player_name'
+                            ,'team', 'number', 'position_id', 'position'], as_index=False).agg({'x':'mean','y':'mean'})
 
         return avg_pos
 
 
+    @staticmethod
+    def _plot_football_pitch(scale, lcolour='white', pcolour='grey', fcolour='#444444'):
+        #Create figure
+        fig=plt.figure(figsize=[scale*6,scale*4])
+        ax=fig.add_subplot(1,1,1)
+        
+        # Set colours
+        fig.set_facecolor(fcolour)
+        ax.patch.set_facecolor(pcolour)
+
+        #Pitch Outline & Centre Line
+        plt.plot([0,0],[0,90], color=lcolour)
+        plt.plot([0,130],[90,90], color=lcolour)
+        plt.plot([130,130],[90,0], color=lcolour)
+        plt.plot([130,0],[0,0], color=lcolour)
+        plt.plot([65,65],[0,90], color=lcolour)
+
+        #Left Penalty Area
+        plt.plot([16.5,16.5],[65,25],color=lcolour)
+        plt.plot([0,16.5],[65,65],color=lcolour)
+        plt.plot([16.5,0],[25,25],color=lcolour)
+
+        #Right Penalty Area
+        plt.plot([130,113.5],[65,65],color=lcolour)
+        plt.plot([113.5,113.5],[65,25],color=lcolour)
+        plt.plot([113.5,130],[25,25],color=lcolour)
+
+        #Left 6-yard Box
+        plt.plot([0,5.5],[54,54],color=lcolour)
+        plt.plot([5.5,5.5],[54,36],color=lcolour)
+        plt.plot([5.5,0.5],[36,36],color=lcolour)
+
+        #Right 6-yard Box
+        plt.plot([130,124.5],[54,54],color=lcolour)
+        plt.plot([124.5,124.5],[54,36],color=lcolour)
+        plt.plot([124.5,130],[36,36],color=lcolour)
+
+        #Prepare Circles
+        centreCircle = plt.Circle((65,45),9.15,color=lcolour,fill=False)
+        centreSpot = plt.Circle((65,45),0.8,color=lcolour)
+        leftPenSpot = plt.Circle((11,45),0.8,color=lcolour)
+        rightPenSpot = plt.Circle((119,45),0.8,color=lcolour)
+
+        #Draw Circles
+        ax.add_patch(centreCircle)
+        ax.add_patch(centreSpot)
+        ax.add_patch(leftPenSpot)
+        ax.add_patch(rightPenSpot)
+
+        #Prepare Arcs
+        leftArc = Arc((11,45),height=18.3,width=18.3,angle=0,theta1=310,theta2=50,color=lcolour)
+        rightArc = Arc((119,45),height=18.3,width=18.3,angle=0,theta1=130,theta2=230,color=lcolour)
+
+        #Draw Arcs
+        ax.add_patch(leftArc)
+        ax.add_patch(rightArc)
+
+        #Tidy Axes
+        plt.axis('off')
+        
+        return fig
+
+    def plot_avg_positions(self, match_id, path=None, scale=1, fsize=12):
+        """
+        Plot the average postitions of the Starting XIs on a football pitch
+        """
+        if path == None:
+            assert self._root_path != None, "path must be specified"
+            path = self._root_path + 'events/'
+
+        df = self.get_avg_positions(match_id)
+
+        home = df[df['team'] == 'home']
+        away = df[df['team'] == 'away']
+
+        away['x'] = 120 - away['x']
+        away['y'] = 80 - away['y']
+
+        cdict = {'home':'r','away':'b'}
+
+        fig = self._plot_football_pitch(scale=scale)
+        
+        for team,name in zip([home,away],['home','away']):
+            plt.scatter(team['x'],team['y'], s=200*scale, marker='o', c=cdict[name])
+        for player in home.index:
+            plt.text(home.loc[player]['x']-0.75,home.loc[player]['y']-0.75,s=home.loc[player]['number'], fontsize=fsize, c='w')
+        for player in away.index:
+            plt.text(away.loc[player]['x']-0.75,away.loc[player]['y']-0.75,s=away.loc[player]['number'], fontsize=fsize, c='w')
+
+        return fig
