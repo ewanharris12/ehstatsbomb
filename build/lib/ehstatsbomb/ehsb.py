@@ -284,14 +284,13 @@ class MyClass:
 
         #Tidy Axes
         plt.axis('off')
-        
-        return fig
 
     def plot_avg_positions(self, match_id, ha='All', path=None, scale=1, fsize=12):
         """
         Plot the average postitions of the Starting XIs on a football pitch
         ha can be 'Home', 'Away' or 'All'
         """
+        assert match_id != None, "Specify a match_id"
         assert ha in ['Home','Away','All'], f"ha not recognised: {ha}"
 
         if path == None:
@@ -322,3 +321,75 @@ class MyClass:
             plt.text(x=x,y=91, s=team['team_name'].max(), c=cdict[name], fontsize=10*scale, ha=align)
             for player in team.index:
                 plt.annotate(xy=(team.loc[player]['x'],team.loc[player]['y']-1/scale),s=team.loc[player]['number'], fontsize=12, c='w', ha="center")
+
+    def plot_passing_maps(self, match_id, ha='All', path=None, scale=1, fsize=12):
+        """
+        Plot the Starting XIs average positions and who they passed to regularly (represented by the thickness of the lines between players)
+        threshold = minimum number of passes from one individual to another (in either direction) for it to be represented in the plot
+        """
+        assert match_id != None, "Specify a match_id"
+        assert ha in ['Home','Away','All'], f"ha not recognised: {ha}"
+
+        if path == None:
+            assert self._root_path != None, "path must be specified"
+            path = self._root_path + 'events/'
+
+        match = self.get_specific_match(match_id)
+        passing = match[(match['type_name']=='Pass') & (pd.isnull(match['pass_outcome_name']))]
+
+        p = passing[['id','player_id','player_name','pass_recipient_id','pass_recipient_name']]
+
+        p_agg = p.groupby(['player_id','player_name','pass_recipient_id','pass_recipient_name'],as_index=False).agg({'id':'count'}
+                                                                                                   ).rename(columns={'id':'count'})
+        
+        combined_passes = pd.DataFrame()
+        players = p_agg['player_name'].unique().tolist()
+        recips = p_agg['pass_recipient_name'].unique().tolist()
+
+        for player in players:
+            if player in recips:
+                recips.remove(player)
+            for receiver in recips:
+                player_list = [player,receiver]
+                df = p_agg[(p_agg.player_name.isin(player_list)) & (p_agg.pass_recipient_name.isin(player_list))]
+                agg = df.agg({'player_id':'max', 'player_name':'max', 'pass_recipient_id':'min', 'pass_recipient_name':'min',
+            'count':'sum'})
+                
+                agg = pd.DataFrame(agg).T.dropna()
+                
+                combined_passes = pd.concat([combined_passes,agg])
+
+        recip_location = avg_pos[['player_id','x','y']].rename(columns={'player_id':'pass_recipient_id','x':'recip_x','y':'recip_y'})
+
+        all_passes = combined_passes.merge(recip_location, how='left', on='pass_recipient_id')
+
+        avg_pos = self.get_avg_positions(match_id)
+
+        passing_graph = avg_pos.merge(all_passes, how='left', on=['player_id','player_name'])
+
+        self.plot_avg_positions(match_id,scale=scale, ha=ha)
+        cdict = {'home':'r','away':'b'}
+
+        if ha != 'All':
+            passing_graph = passing_graph[passing_graph['name'] == ha.lower()]
+
+
+        for i in passing_graph.index:
+            name = passing_graph.loc[i]['team']
+            w =passing_graph.loc[i]['count']
+            
+            if name == 'away':
+                x = 120-passing_graph.loc[i]['x']
+                recip_x = 120-passing_graph.loc[i]['recip_x']
+                y = 80-passing_graph.loc[i]['y']
+                recip_y = 80-passing_graph.loc[i]['recip_y']
+                
+            else:
+                x = passing_graph.loc[i]['x']
+                recip_x = passing_graph.loc[i]['recip_x']
+                y = passing_graph.loc[i]['y']
+                recip_y = passing_graph.loc[i]['recip_y']
+            #plt.scatter(x=passing_graph.loc[i]['x'],y=passing_graph.loc[i]['y'], c=cdict[name])
+            
+            plt.plot([x,recip_x]
+                    ,[y,recip_y], c=cdict[name], linewidth=w/3)

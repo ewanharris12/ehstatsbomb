@@ -359,11 +359,11 @@ class MyClass:
                 
                 combined_passes = pd.concat([combined_passes,agg])
 
+        avg_pos = self.get_avg_positions(match_id)
+
         recip_location = avg_pos[['player_id','x','y']].rename(columns={'player_id':'pass_recipient_id','x':'recip_x','y':'recip_y'})
 
         all_passes = combined_passes.merge(recip_location, how='left', on='pass_recipient_id')
-
-        avg_pos = self.get_avg_positions(match_id)
 
         passing_graph = avg_pos.merge(all_passes, how='left', on=['player_id','player_name'])
 
