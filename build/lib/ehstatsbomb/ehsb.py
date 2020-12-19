@@ -305,7 +305,7 @@ class MyClass:
 
         cdict = {'home':'r','away':'b'}
 
-        fig = self._plot_football_pitch(scale=scale)
+        self._plot_football_pitch(scale=scale)
 
         if ha == 'Home':
             lists = zip([home],['home'],[0],['left'])
@@ -313,6 +313,7 @@ class MyClass:
             lists = zip([away],['away'],[0],['left'])
         else:
             lists = zip([home,away],['home','away'],[0,130],['left','right'])
+            pd.set_option('mode.chained_assignment', None)
             away['x'] = 120 - away['x']
             away['y'] = 80 - away['y']             
         
@@ -321,10 +322,3 @@ class MyClass:
             plt.text(x=x,y=91, s=team['team_name'].max(), c=cdict[name], fontsize=10*scale, ha=align)
             for player in team.index:
                 plt.annotate(xy=(team.loc[player]['x'],team.loc[player]['y']-1/scale),s=team.loc[player]['number'], fontsize=12, c='w', ha="center")
-
-        return fig
-
-
-
-
-
