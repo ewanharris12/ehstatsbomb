@@ -371,14 +371,14 @@ class MyClass:
         cdict = {'home':'r','away':'b'}
 
         if ha != 'All':
-            passing_graph = passing_graph[passing_graph['name'] == ha.lower()]
+            passing_graph = passing_graph[passing_graph['team'] == ha.lower()]
 
 
         for i in passing_graph.index:
             name = passing_graph.loc[i]['team']
             w =passing_graph.loc[i]['count']
             
-            if name == 'away':
+            if (name == 'away') & (ha == 'All'):
                 x = 120-passing_graph.loc[i]['x']
                 recip_x = 120-passing_graph.loc[i]['recip_x']
                 y = 80-passing_graph.loc[i]['y']
