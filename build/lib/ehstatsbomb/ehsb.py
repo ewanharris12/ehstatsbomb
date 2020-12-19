@@ -291,9 +291,10 @@ class MyClass:
         
         return fig
 
-    def plot_avg_positions(self, match_id, path=None, scale=1, fsize=12):
+    def plot_avg_positions(self, match_id, ha='All', path=None, scale=1, fsize=12):
         """
         Plot the average postitions of the Starting XIs on a football pitch
+        ha can be 'Home', 'Away' or 'All'
         """
         if path == None:
             assert self._root_path != None, "path must be specified"
@@ -304,18 +305,23 @@ class MyClass:
         home = df[df['team'] == 'home']
         away = df[df['team'] == 'away']
 
-        away['x'] = 120 - away['x']
-        away['y'] = 80 - away['y']
-
         cdict = {'home':'r','away':'b'}
 
         fig = self._plot_football_pitch(scale=scale)
+
+        if ha == 'Home':
+            lists = zip([home],['home'],[0])
+        elif ha == 'Away':
+            lists = zip([away],['away'],[0])
+        else:
+            lists = zip([home,away],['home','away'],[0,130])
+            away['x'] = 120 - away['x']
+            away['y'] = 80 - away['y']            
         
-        for team,name in zip([home,away],['home','away']):
+        for team,name,x,align in lists:
             plt.scatter(team['x'],team['y'], s=200*scale, marker='o', c=cdict[name])
-        for player in home.index:
-            plt.text(home.loc[player]['x']-0.75,home.loc[player]['y']-0.75,s=home.loc[player]['number'], fontsize=fsize, c='w')
-        for player in away.index:
-            plt.text(away.loc[player]['x']-0.75,away.loc[player]['y']-0.75,s=away.loc[player]['number'], fontsize=fsize, c='w')
+            plt.text(x=x,y=91, s=team['team_name'].max(), c=cdict[name], fontsize=10*scale, ha=align)
+            for player in team.index:
+                plt.annotate(xy=(team.loc[player]['x'],team.loc[player]['y']-1/scale),s=team.loc[player]['number'], fontsize=12, c='w', ha="center")
 
         return fig
