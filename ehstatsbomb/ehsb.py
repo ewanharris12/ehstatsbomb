@@ -213,12 +213,13 @@ class MyClass:
 
         events['time_ticker'] = (events['minute']*60) + events['second']
 
+
         sub_dict = events[events['type_name'] == 'Substitution'].groupby('team_id').agg(
             {'minute':lambda x: x.iloc[0],'second':lambda x: x.iloc[0],'time_ticker':'min'}).to_dict()
 
         #players = xis.index.tolist()
 
-        df = events[['team_id','team_name','player_id','player_name','location']].dropna()
+        df = events[['team_id','team_name','player_id','player_name','location','time_ticker','minute','second']].dropna()
 
         df = df.merge(xis, how='inner', left_on='player_id', right_index=True)
 
@@ -234,7 +235,7 @@ class MyClass:
 
 
         presub_df = df.groupby(['team_id','team_name','player_id','player_name'
-                            ,'team', 'number', 'position_id', 'position'], as_index=False).agg({'x':'mean','y':'mean'})
+                            ,'team', 'number', 'position_id', 'position','valid_until'], as_index=False).agg({'x':'mean','y':'mean'})
 
         return presub_df
 
@@ -332,7 +333,7 @@ class MyClass:
         
         for team,name,x,align in lists:
             plt.scatter(team['x'],team['y'], s=200*scale, marker='o', c=cdict[name])
-            plt.text(x=x,y=91, s=team['team_name'].max(), c=cdict[name], fontsize=10*scale
+            plt.text(x=x,y=96, s=team['team_name'].max(), c=cdict[name], fontsize=10*scale
             , ha=align, fontfamily=self._title_font, fontweight="bold")
             plt.text(x=x,y=92, s="Valid up to: " + team['valid_until'].max(), c='w', fontsize=6*scale
                      , ha=align, fontfamily=self._main_font)

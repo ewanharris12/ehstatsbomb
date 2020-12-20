@@ -9,6 +9,8 @@ class MyClass:
     def __init__(self):
         self._match_info_df = None
         self._root_path = None
+        self._title_font = "Alegreya Sans"
+        self._main_font = "Open Sans"
 
     @staticmethod
     def _test_print():
@@ -200,6 +202,7 @@ class MyClass:
     def get_avg_positions(self, match_id, path=None):
         """
         Get average positions of the Starting XIs from a particular game
+        valid_until column is the timestamp (format: MM:SS) of the first substitution for that team (the time up to which average positions are calculated)
         """
         if path == None:
             assert self._root_path != None, "path must be specified"
@@ -208,7 +211,12 @@ class MyClass:
         xis = self.get_starting_xis(match_id)
         events = self.get_specific_match(match_id)
 
-        players = xis.index.tolist()
+        events['time_ticker'] = (events['minute']*60) + events['second']
+
+        sub_dict = events[events['type_name'] == 'Substitution'].groupby('team_id').agg(
+            {'minute':lambda x: x.iloc[0],'second':lambda x: x.iloc[0],'time_ticker':'min'}).to_dict()
+
+        #players = xis.index.tolist()
 
         df = events[['team_id','team_name','player_id','player_name','location']].dropna()
 
@@ -217,12 +225,18 @@ class MyClass:
         df['x'] = df['location'].apply(lambda x: x[0])
         df['y'] = df['location'].apply(lambda x: x[1])
 
-        df = df[df['player_id'].isin(players)]
+        presub_df = pd.DataFrame()
 
-        avg_pos = df.groupby(['team_id','team_name','player_id','player_name'
+        for team in df['team_id'].unique().tolist():
+            _df = df[(df['team_id'] == team) & (df['team_id'] < sub_dict['time_ticker'][team])]
+            _df['valid_until'] = str(sub_dict['minute'][team]) + ':' + str(sub_dict['second'][team])
+            presub_df = pd.concat([presub_df,_df])
+
+
+        presub_df = df.groupby(['team_id','team_name','player_id','player_name'
                             ,'team', 'number', 'position_id', 'position'], as_index=False).agg({'x':'mean','y':'mean'})
 
-        return avg_pos
+        return presub_df
 
 
     @staticmethod
@@ -318,9 +332,13 @@ class MyClass:
         
         for team,name,x,align in lists:
             plt.scatter(team['x'],team['y'], s=200*scale, marker='o', c=cdict[name])
-            plt.text(x=x,y=91, s=team['team_name'].max(), c=cdict[name], fontsize=10*scale, ha=align)
+            plt.text(x=x,y=91, s=team['team_name'].max(), c=cdict[name], fontsize=10*scale
+            , ha=align, fontfamily=self._title_font, fontweight="bold")
+            plt.text(x=x,y=92, s="Valid up to: " + team['valid_until'].max(), c='w', fontsize=6*scale
+                     , ha=align, fontfamily=self._main_font)
             for player in team.index:
-                plt.annotate(xy=(team.loc[player]['x'],team.loc[player]['y']-1/scale),s=team.loc[player]['number'], fontsize=12, c='w', ha="center")
+                plt.annotate(xy=(team.loc[player]['x'],team.loc[player]['y']-1/scale),s=team.loc[player]['number']
+                , fontsize=12, c='w', ha="center", fontfamily=self._main_font)
 
     def plot_passing_maps(self, match_id, ha='All', path=None, scale=1, fsize=12):
         """
