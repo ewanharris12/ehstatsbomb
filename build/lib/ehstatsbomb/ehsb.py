@@ -11,6 +11,14 @@ class MyClass:
         self._root_path = None
         self._title_font = "Alegreya Sans"
         self._main_font = "Open Sans"
+        
+        # import colour codes for teams
+        self._c = pd.read_csv('color-coding-teams.csv').set_index('name')
+        self._c['colcode'].fillna('blue', inplace=True)
+        self._c['textcode'].fillna('white', inplace=True)
+
+        self._colours = self._c.to_dict()
+
 
     @staticmethod
     def _test_print():
@@ -332,14 +340,14 @@ class MyClass:
             away['y'] = 80 - away['y']             
         
         for team,name,x,align in lists:
-            plt.scatter(team['x'],team['y'], s=200*scale, marker='o', c=cdict[name])
-            plt.text(x=x,y=96, s=team['team_name'].max(), c=cdict[name], fontsize=10*scale
+            plt.scatter(team['x'],team['y'], s=200*scale, marker='o', c=self._colours['colcode'][name])
+            plt.text(x=x,y=96, s=team['team_name'].max(), c=self._colours['colcode'][name], fontsize=10*scale
             , ha=align, fontfamily=self._title_font, fontweight="bold")
             plt.text(x=x,y=92, s="Valid up to: " + team['valid_until'].max(), c='w', fontsize=6*scale
                      , ha=align, fontfamily=self._main_font)
             for player in team.index:
                 plt.annotate(xy=(team.loc[player]['x'],team.loc[player]['y']-1/scale),s=team.loc[player]['number']
-                , fontsize=12, c='w', ha="center", fontfamily=self._main_font)
+                , fontsize=12, c=self._colours['textcode'][team.loc[player]['name']], ha="center", fontfamily=self._main_font)
 
     def plot_passing_maps(self, match_id, ha='All', path=None, scale=1, fsize=12):
         """
@@ -411,4 +419,4 @@ class MyClass:
             #plt.scatter(x=passing_graph.loc[i]['x'],y=passing_graph.loc[i]['y'], c=cdict[name])
             
             plt.plot([x,recip_x]
-                    ,[y,recip_y], c=cdict[name], linewidth=w/3)
+                    ,[y,recip_y], c=self._colours['colcode'][name], linewidth=w/3)
