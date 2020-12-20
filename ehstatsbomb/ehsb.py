@@ -13,7 +13,7 @@ class MyClass:
         self._main_font = "Open Sans"
         
         # import colour codes for teams
-        self._c = pd.read_csv("C:\Users\Ewan\Git Repo\ehstatsbomb\ehstatsbomb\color-coding-teams.csv").set_index('name')
+        self._c = pd.read_csv("C:/Users/Ewan/Git Repo/ehstatsbomb/ehstatsbomb/color-coding-teams.csv").set_index('name')
         self._c['colcode'].fillna('blue', inplace=True)
         self._c['textcode'].fillna('white', inplace=True)
 
