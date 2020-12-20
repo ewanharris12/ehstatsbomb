@@ -400,10 +400,11 @@ class MyClass:
 
 
         for i in passing_graph.index:
-            name = passing_graph.loc[i]['team']
+            homeaway = passing_graph.loc[i]['team']
+            team_name = passing_graph.loc[i]['team_name']
             w =passing_graph.loc[i]['count']
             
-            if (name == 'away') & (ha == 'All'):
+            if (homeaway == 'away') & (ha == 'All'):
                 x = 120-passing_graph.loc[i]['x']
                 recip_x = 120-passing_graph.loc[i]['recip_x']
                 y = 80-passing_graph.loc[i]['y']
@@ -416,4 +417,4 @@ class MyClass:
                 recip_y = passing_graph.loc[i]['recip_y']
             
             plt.plot([x,recip_x]
-                    ,[y,recip_y], c=self._colours['colcode']['team_name'], linewidth=w/3)
+                    ,[y,recip_y], c=self._colours['colcode'][team_name], linewidth=w/3)
