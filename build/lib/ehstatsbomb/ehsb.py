@@ -160,7 +160,7 @@ class MyClass:
             assert self._root_path != None, "path must be specified"
             path = self._root_path + 'events/'
 
-        df = self.get_specific_match(match_id)
+        df = self.get_specific_match(match_id, path=path)
 
         df = df[df['type_name'] == 'Starting XI']
 
@@ -208,8 +208,8 @@ class MyClass:
             assert self._root_path != None, "path must be specified"
             path = self._root_path + 'events/'
 
-        xis = self.get_starting_xis(match_id)
-        events = self.get_specific_match(match_id)
+        xis = self.get_starting_xis(match_id, path=path)
+        events = self.get_specific_match(match_id, path=path)
 
         events['time_ticker'] = (events['minute']*60) + events['second']
 
@@ -234,7 +234,7 @@ class MyClass:
             presub_df = pd.concat([presub_df,_df])
 
 
-        presub_df = df.groupby(['team_id','team_name','player_id','player_name'
+        presub_df = presub_df.groupby(['team_id','team_name','player_id','player_name'
                             ,'team', 'number', 'position_id', 'position','valid_until'], as_index=False).agg({'x':'mean','y':'mean'})
 
         return presub_df
@@ -312,7 +312,7 @@ class MyClass:
             assert self._root_path != None, "path must be specified"
             path = self._root_path + 'events/'
 
-        df = self.get_avg_positions(match_id)
+        df = self.get_avg_positions(match_id, path=path)
 
         home = df[df['team'] == 'home']
         away = df[df['team'] == 'away']
@@ -353,7 +353,7 @@ class MyClass:
             assert self._root_path != None, "path must be specified"
             path = self._root_path + 'events/'
 
-        match = self.get_specific_match(match_id)
+        match = self.get_specific_match(match_id, path=path)
         passing = match[(match['type_name']=='Pass') & (pd.isnull(match['pass_outcome_name']))]
 
         p = passing[['id','player_id','player_name','pass_recipient_id','pass_recipient_name']]
@@ -378,7 +378,7 @@ class MyClass:
                 
                 combined_passes = pd.concat([combined_passes,agg])
 
-        avg_pos = self.get_avg_positions(match_id)
+        avg_pos = self.get_avg_positions(match_id, path=path)
 
         recip_location = avg_pos[['player_id','x','y']].rename(columns={'player_id':'pass_recipient_id','x':'recip_x','y':'recip_y'})
 
@@ -386,7 +386,7 @@ class MyClass:
 
         passing_graph = avg_pos.merge(all_passes, how='left', on=['player_id','player_name'])
 
-        self.plot_avg_positions(match_id,scale=scale, ha=ha)
+        self.plot_avg_positions(match_id,scale=scale, ha=ha, path=path)
         cdict = {'home':'r','away':'b'}
 
         if ha != 'All':
