@@ -325,8 +325,6 @@ class MyClass:
         home = df[df['team'] == 'home']
         away = df[df['team'] == 'away']
 
-        cdict = {'home':'r','away':'b'}
-
         self._plot_football_pitch(scale=scale)
 
         if ha == 'Home':
@@ -340,8 +338,8 @@ class MyClass:
             away['y'] = 80 - away['y']             
         
         for team,name,x,align in lists:
-            plt.scatter(team['x'],team['y'], s=200*scale, marker='o', c=self._colours['colcode'][name])
-            plt.text(x=x,y=96, s=team['team_name'].max(), c=self._colours['colcode'][name], fontsize=10*scale
+            plt.scatter(team['x'],team['y'], s=200*scale, marker='o', c=self._colours['colcode'][team])
+            plt.text(x=x,y=96, s=team['team_name'].max(), c=self._colours['colcode'][team], fontsize=10*scale
             , ha=align, fontfamily=self._title_font, fontweight="bold")
             plt.text(x=x,y=92, s="Valid up to: " + team['valid_until'].max(), c='w', fontsize=6*scale
                      , ha=align, fontfamily=self._main_font)
@@ -395,7 +393,6 @@ class MyClass:
         passing_graph = avg_pos.merge(all_passes, how='left', on=['player_id','player_name'])
 
         self.plot_avg_positions(match_id,scale=scale, ha=ha, path=path)
-        cdict = {'home':'r','away':'b'}
 
         if ha != 'All':
             passing_graph = passing_graph[passing_graph['team'] == ha.lower()]
@@ -416,7 +413,6 @@ class MyClass:
                 recip_x = passing_graph.loc[i]['recip_x']
                 y = passing_graph.loc[i]['y']
                 recip_y = passing_graph.loc[i]['recip_y']
-            #plt.scatter(x=passing_graph.loc[i]['x'],y=passing_graph.loc[i]['y'], c=cdict[name])
             
             plt.plot([x,recip_x]
-                    ,[y,recip_y], c=self._colours['colcode'][name], linewidth=w/3)
+                    ,[y,recip_y], c=self._colours['colcode'][team], linewidth=w/3)
