@@ -21,4 +21,4 @@ spec_match = sb.get_specific_match('19748', path='C:/Users/Ewan/OneDrive - Kubri
 # %%
 #plot_map = sb.plot_avg_positions('19748')
 
-sb.plot_avg_positions(match_id='19748')
+avg_pos = sb.get_avg_positions('19748')
